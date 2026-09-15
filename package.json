@@ -1,0 +1,143 @@
+{
+  "name": "ollama-codex-clone",
+  "displayName": "Ollama Codex Clone",
+  "description": "Local, agentic AI coding assistant for VS Code powered entirely by Ollama — no cloud API required.",
+  "version": "0.1.0",
+  "publisher": "your-publisher-id",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.90.0",
+    "node": ">=20"
+  },
+  "categories": ["AI", "Programming Languages", "Machine Learning", "Other"],
+  "keywords": ["ollama", "ai", "local llm", "copilot", "agentic", "chat-participant", "code assistant"],
+  "icon": "media/icon.png",
+  "main": "./dist/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      { "command": "ollamaCodex.openChat", "title": "Ollama Codex: Open Chat", "category": "Ollama Codex" },
+      { "command": "ollamaCodex.changeModel", "title": "Ollama Codex: Change Model", "category": "Ollama Codex" },
+      { "command": "ollamaCodex.testConnection", "title": "Ollama Codex: Test Connection", "category": "Ollama Codex" },
+      { "command": "ollamaCodex.explainSelection", "title": "Ollama Codex: Explain Selection", "category": "Ollama Codex" },
+      { "command": "ollamaCodex.refactorSelection", "title": "Ollama Codex: Refactor Selection", "category": "Ollama Codex" },
+      { "command": "ollamaCodex.fixCurrentFile", "title": "Ollama Codex: Fix Current File", "category": "Ollama Codex" },
+      { "command": "ollamaCodex.generateCode", "title": "Ollama Codex: Generate Code", "category": "Ollama Codex" },
+      { "command": "ollamaCodex.reviewWorkspace", "title": "Ollama Codex: Review Workspace", "category": "Ollama Codex" },
+      { "command": "ollamaCodex.toggleAgentMode", "title": "Ollama Codex: Toggle Agent Mode", "category": "Ollama Codex" }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "submenu": "ollamaCodex.contextMenu",
+          "group": "1_modification"
+        }
+      ],
+      "ollamaCodex.contextMenu": [
+        { "command": "ollamaCodex.explainSelection", "group": "1_actions@1" },
+        { "command": "ollamaCodex.refactorSelection", "group": "1_actions@2" },
+        { "command": "ollamaCodex.fixCurrentFile", "group": "1_actions@3" },
+        { "command": "ollamaCodex.generateCode", "group": "1_actions@4" }
+      ],
+      "commandPalette": [
+        { "command": "ollamaCodex.openChat" },
+        { "command": "ollamaCodex.changeModel" },
+        { "command": "ollamaCodex.testConnection" },
+        { "command": "ollamaCodex.explainSelection", "when": "editorHasSelection" },
+        { "command": "ollamaCodex.refactorSelection", "when": "editorHasSelection" },
+        { "command": "ollamaCodex.fixCurrentFile" },
+        { "command": "ollamaCodex.generateCode" },
+        { "command": "ollamaCodex.reviewWorkspace" },
+        { "command": "ollamaCodex.toggleAgentMode" }
+      ]
+    },
+    "submenus": [
+      { "id": "ollamaCodex.contextMenu", "label": "Ollama Codex" }
+    ],
+    "keybindings": [
+      { "command": "ollamaCodex.openChat", "key": "ctrl+alt+o", "mac": "cmd+alt+o" }
+    ],
+    "chatParticipants": [
+      {
+        "id": "ollamaCodex.agent",
+        "fullName": "Ollama Codex",
+        "name": "ollama",
+        "description": "Agentic, fully-local coding assistant powered by Ollama. It can read, write, and edit files in your workspace.",
+        "isSticky": true
+      }
+    ],
+    "configuration": {
+      "title": "Ollama Codex",
+      "properties": {
+        "ollamaCodex.host": {
+          "type": "string",
+          "default": "http://localhost:11434",
+          "description": "Base URL of the local Ollama server."
+        },
+        "ollamaCodex.model": {
+          "type": "string",
+          "default": "qwen2.5-coder:14b",
+          "description": "Ollama model tag to use for chat and agentic operations (e.g. qwen2.5-coder:14b, gemma2)."
+        },
+        "ollamaCodex.temperature": {
+          "type": "number",
+          "default": 0.2,
+          "minimum": 0,
+          "maximum": 2,
+          "description": "Sampling temperature passed to Ollama."
+        },
+        "ollamaCodex.numCtx": {
+          "type": "number",
+          "default": 8192,
+          "description": "Context window size (num_ctx) requested from the model."
+        },
+        "ollamaCodex.agentMode": {
+          "type": "boolean",
+          "default": true,
+          "description": "When enabled, the chat participant may call tools to read/write/edit files. When disabled, it only answers in chat."
+        },
+        "ollamaCodex.autoApproveEdits": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, file writes/edits/deletes proposed by the agent are applied without a confirmation prompt. Leave off unless you trust your model and prompts."
+        },
+        "ollamaCodex.maxToolIterations": {
+          "type": "number",
+          "default": 12,
+          "description": "Maximum number of tool-call round-trips the agent loop will perform for a single request."
+        },
+        "ollamaCodex.excludeGlobs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["**/node_modules/**", "**/.git/**", "**/dist/**", "**/out/**", "**/*.lock"],
+          "description": "Glob patterns excluded from workspace search/context tools."
+        },
+        "ollamaCodex.maxFileReadBytes": {
+          "type": "number",
+          "default": 200000,
+          "description": "Maximum bytes read from a single file by the read_file tool."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "node esbuild.js --production",
+    "watch": "node esbuild.js --watch",
+    "compile": "tsc -p ./ --noEmit",
+    "lint": "eslint src --ext .ts",
+    "test": "vitest run",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/vscode": "^1.90.0",
+    "@typescript-eslint/eslint-plugin": "^7.16.0",
+    "@typescript-eslint/parser": "^7.16.0",
+    "esbuild": "^0.23.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0",
+    "@vscode/vsce": "^3.0.0"
+  }
+}
