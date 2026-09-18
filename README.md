@@ -150,7 +150,7 @@ All commands are also available from the right-click context menu under **Ollama
            ▼
 ┌──────────────────────────────┐
 │ Agent Loop                   │
-│ system prompt + tool-calling│
+│ system prompt + tool-calling │
 └──────────┬───────────────────┘
            │
            ▼
@@ -163,13 +163,13 @@ All commands are also available from the right-click context menu under **Ollama
            ▼
 ┌──────────────────────────────┐
 │ Ollama REST API              │
-│ /api/chat · streaming       │
+│ /api/chat · streaming        │
 └──────────┬───────────────────┘
            │
            ▼
 ┌──────────────────────────────┐
 │ Local Model                  │
-│ qwen2.5-coder · gemma2 · …  │
+│ qwen2.5-coder · gemma2 · …   │
 └──────────────────────────────┘
 ```
 
